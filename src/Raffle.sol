@@ -42,7 +42,7 @@ contract Raffle is VRFConsumerBaseV2 {
     }
 
     /**State Variables */
-    uint16 private constant REQUEST_CONFIRMATIONS = 2;
+    uint16 private constant REQUEST_CONFIRMATIONS = 3; // number to call fulfillRandomWords
     uint32 private constant NUM_WORDS = 1;
     uint256 private immutable i_entranceFee;
     uint256 private immutable i_interval; // @dev Duration of the lottery in seconds
@@ -183,5 +183,9 @@ contract Raffle is VRFConsumerBaseV2 {
 
     function getLastTimeStamp() external view returns (uint256) {
         return s_lastTimeStamp;
+    }
+
+    function getRequestConfirmations() public pure returns (uint256) {
+        return REQUEST_CONFIRMATIONS;
     }
 }
