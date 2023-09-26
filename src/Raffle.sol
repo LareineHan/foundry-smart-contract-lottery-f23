@@ -154,7 +154,7 @@ contract Raffle is VRFConsumerBaseV2 {
         s_lastTimeStamp = block.timestamp; // we reset the timestamp
         emit PickedWinner(winner);
         // 3. and Interactions here (other contracts, external contracts)
-        (bool success, ) = winner.call{value: address(this).balance}(" ");
+        (bool success, ) = winner.call{value: address(this).balance}("");
         if (!success) {
             revert Raffle__TransferFailed();
         }
