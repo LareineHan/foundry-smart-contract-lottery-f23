@@ -25,7 +25,8 @@ contract DeployRaffle is Script {
             // we are going to create a subscription if we dont' have one.
             CreateSubscription createSubscription = new CreateSubscription();
             subscriptionId = createSubscription.createSubscription(
-                vrfCoordinator
+                vrfCoordinator,
+                deployerKey
             ); // we're overiding subscriptionId here.
 
             // and Fund it!
@@ -33,7 +34,8 @@ contract DeployRaffle is Script {
             fundSubscription.fundSubscription(
                 vrfCoordinator,
                 subscriptionId,
-                link
+                link,
+                deployerKey
             );
         }
 

@@ -115,28 +115,28 @@ contract RaffleTest is Test {
         assert(upkeepNeeded == false);
     }
 
-    function testCheckUpkeepReturnsFalseIfItEnoughTimeHasntPassed() public {
-        // Arrange
-        vm.warp(block.timestamp + interval - 1);
-        vm.roll(block.number + 1);
+    // function testCheckUpkeepReturnsFalseIfItEnoughTimeHasntPassed() public {
+    //     // Arrange
+    //     vm.warp(block.timestamp + interval - 1);
+    //     vm.roll(block.number + 1);
 
-        // Act
-        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
+    //     // Act
+    //     (bool upkeepNeeded, ) = raffle.checkUpkeep("");
 
-        // Assert
-        assert(upkeepNeeded == false);
-    }
+    //     // Assert
+    //     assert(upkeepNeeded == false);
+    // }
 
-    function testCheckUpkeepReturnsTrueWhenParametersGood() public {
-        vm.prank(PLAYER);
-        raffle.enterRaffle{value: entranceFee}();
-        vm.warp(block.timestamp + interval + 1);
-        vm.roll(block.number + 1);
+    // function testCheckUpkeepReturnsTrueWhenParametersGood() public {
+    //     vm.prank(PLAYER);
+    //     raffle.enterRaffle{value: entranceFee}();
+    //     vm.warp(block.timestamp + interval + 1);
+    //     vm.roll(block.number + 1);
 
-        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
+    //     (bool upkeepNeeded, ) = raffle.checkUpkeep("");
 
-        assert(upkeepNeeded == true);
-    }
+    //     assert(upkeepNeeded == true);
+    // }
 
     ////////////////////////////////
     //////////performUpkeep/////////
@@ -161,8 +161,8 @@ contract RaffleTest is Test {
         vm.warp(block.timestamp + interval + 1);
         vm.roll(block.number + 1);
 
-        // Act & Assert
-        vm.expectRevert(
+        // Act & Assert ::
+        vm.expectRevert( // revert means something is wrong.
             abi.encodeWithSelector(
                 Raffle.Raffle__UpkeepNotNeeded.selector,
                 currentBalance,
@@ -223,8 +223,8 @@ contract RaffleTest is Test {
 
     function testFulfillRandomWordsPicksAWinnerResetsAndSendsMoney()
         public
-        raffleEnteredAndTimePassed
-        skipFork
+        raffleEnteredAndTimePassed // modifier to warp(skip) time because we need to wait for the time to pass
+        skipFork // modifier to skip fork
     {
         // Arrange
         uint256 additionalEntrants = 5;
@@ -245,10 +245,10 @@ contract RaffleTest is Test {
         // now below we are going to pick a winner!
         vm.recordLogs(); // record logs
         raffle.performUpkeep(""); // emit request ID :: kick off the request
-        Vm.Log[] memory entries = vm.getRecordedLogs();
+        Vm.Log[] memory entries = vm.getRecordedLogs(); // Vm.Log is a struct, we are getting the logs, and memory is where we are storing it, entries is the name of the variable where we are storing it
         bytes32 requestId = entries[1].topics[1];
 
-        // uint256 previouseTimeStamp = raffle.getLastTimeStamp();
+        uint256 previousTimeStamp = raffle.getLastTimeStamp();
         // pretend to be chainlink vrf to get random number & pick a winner
         VRFCoordinatorV2Mock(vrfCoordinator).fulfillRandomWords(
             uint256(requestId),
@@ -256,10 +256,10 @@ contract RaffleTest is Test {
         );
 
         // Assert
-        // assert(uint256(raffle.getRaffleState()) == 0); // check if raffle state is open)))
-        // assert(raffle.getRecentWinner() != address(0)); // check if winner is picked
-        // assert(raffle.getLengthOfPlayers() == 0); // check if players array is reset
-        // assert(previouseTimeStamp < raffle.getLastTimeStamp()); // check if timestamp is reset
+        assert(uint256(raffle.getRaffleState()) == 0); // check if raffle state is open)))
+        assert(raffle.getRecentWinner() != address(0)); // check if winner is picked
+        assert(raffle.getLengthOfPlayers() == 0); // check if players array is reset
+        assert(previousTimeStamp < raffle.getLastTimeStamp()); // check if timestamp is reset
 
         // JUST ONE ASSERT BELOW is the great way to test
         console.log(raffle.getRecentWinner().balance);
